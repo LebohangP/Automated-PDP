@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Submit PDP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg,  #0f172a);
+  min-height: 100vh;
+}
+
+header {
+  text-align: center;
+  color: white;
+  padding: 30px 20px 10px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.card {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 30px;
+  width: 100%;
+  max-width: 650px;
+  color: white;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
+
+.file-box {
+  background: rgba(255,255,255,0.9);
+  color: #111;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+button {
+  width: 100%;
+  background: linear-gradient(135deg, #10b981, #22c55e);
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.modal button {
+  background: #2111b3;
+  margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1> Submit Your PDP</h1>
+</header>
+
+<div class="container">
+  <div class="card">
+
+    <label>Employee Name</label>
+    <input id="name" placeholder="Enter full name">
+
+    <label>Department</label>
+    <select id="dept">
+      <option>ICT</option>
+      <option>HR</option>
+      <option>Finance</option>
+      <option>Operations</option>
+    </select>
+
+    <label>Upload PDP (PDF only)</label>
+
+    <!-- File Input -->
+    <input type="file" id="fileInput" accept="application/pdf">
+
+    <div id="fileName"></div>
+
+    <button onclick="submitForm()">Submit PDP</button>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <h3> Submission Successful</h3>
+    <p>Your PDP has been submitted successfully.</p>
+    <button onclick="goToSubmissions()">OK</button>
+  </div>
+</div>
+
+<script>
+//This is for the PDP File submission
+let selectedFile = null;
+
+// detect file
+document.getElementById("fileInput").addEventListener("change", function () {
+  const file = this.files[0];
+  //this ensures that the submitted file is in PDF Form
+  if (file && file.type === "application/pdf") {
+    selectedFile = file;
+    document.getElementById("fileName").innerText = "Selected: " + file.name;
+  } else {
+    alert("Please upload a PDF file only.");
+    this.value = "";
+  }
+});
+
+// This is for the submission form and for validation
+function submitForm() {
+  const name = document.getElementById("name").value;
+  const dept = document.getElementById("dept").value;
+
+  if (!name || !dept || !selectedFile) {
+    alert("Please complete all fields and upload a PDF.");
+    return;
+  }
+
+  const submission = {
+    name,
+    department: dept,
+    fileName: selectedFile.name,
+    time: new Date().toISOString()
+  };
+  
+  let data = JSON.parse(localStorage.getItem("pdpSubmissions")) || [];
+  data.push(submission);
+  localStorage.setItem("pdpSubmissions", JSON.stringify(data));
+
+  document.getElementById("successModal").style.display = "flex";
+}
+
+// redirect to submissions page
+function goToSubmissions() {
+  window.location.href = "PDP.html";
+}
+
+</script>
+
+</body>
+</html>
